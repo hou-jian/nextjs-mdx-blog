@@ -10,6 +10,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "esbuild": "^0.20.1",
+    "mdx-bundler": "^10.0.1",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18"

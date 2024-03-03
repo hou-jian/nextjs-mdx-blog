@@ -1,0 +1,66 @@
+---
+title: Welcome to my MDX page!
+published: 2024-3-3
+description: 文章描述文章描述文章描述
+tags: ["test", "JavaScript"]
+publishedOn: 2024-3-3
+lastUpdatedOn: 2024-3-3
+slug: hello-world
+---
+
+import Demo from "../components-mdx/Demo.tsx";
+
+## 简介
+
+This is some **bold** and _italics_ text.
+
+This is a list in markdown:
+
+- One
+- Two
+- Three
+
+Checkout my React component:
+
+### 三级目录测试
+
+测试
+
+## 可交互demo
+
+<Demo />
+
+## 代码
+
+```tsx
+function useMDXComponents(components: MDXComponents): MDXComponents {
+  return {
+    ...components,
+  };
+}
+```
+
+www.example.com, https://example.com, and contact@example.com.
+
+A note[^1]
+
+~one~ or ~~two~~ tildes.
+
+| 1   | 3   | 3   |
+| --- | --- | --- |
+| 2   | 3   | 3   |
+| 3   | 3   | 3   |
+| 3   | 3   | 3   |
+
+- [ ] to do
+- [x] done
+
+> 引用测试 引用测试 引用测试 引用测试
+>
+> 引用测试 引用测试 引用测试 引用测试
+
+[example](https://example.com)
+
+![img](https://cdn.beekka.com/blogimg/asset/202401/bg2024011602.webp)
+
+[^1]: Big note.../demo/demo.tsx../components-by-mdx/demo.tsx
