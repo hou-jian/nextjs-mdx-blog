@@ -1,6 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { bundleMDX } from "mdx-bundler";
+import remarkGfm from "remark-gfm";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
 
 import { ArticleType, ContentsType } from "@/types/definitions";
 
@@ -16,10 +19,29 @@ const componentsDirectory = path.join(process.cwd(), "src/contents/components-md
 export async function getFileBySlug(type: ContentsType, slug: string) {
   const filePath = path.join(contentsDirectory, type, `${slug}.mdx`);
   const source = fs.readFileSync(filePath, "utf8").trim();
+
   const { code, frontmatter } = await bundleMDX({
     source,
     cwd: componentsDirectory,
+    mdxOptions(options, frontmatter) {
+      options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm];
+      options.rehypePlugins = [
+        ...(options.rehypePlugins ?? []),
+        rehypeSlug,
+        [
+          rehypeAutolinkHeadings,
+          {
+            properties: {
+              className: ["hash-anchor"],
+            },
+          },
+        ],
+      ];
+
+      return options;
+    },
   });
+
   return {
     code,
     frontmatter: frontmatter as ArticleType,
