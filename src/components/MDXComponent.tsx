@@ -4,6 +4,6 @@ import React from "react";
 import { getMDXComponent } from "mdx-bundler/client";
 
 export default function MDXComponent({ code }: { code: string }) {
-  const MDXComponent = getMDXComponent(code);
+  const MDXComponent = React.useMemo(() => getMDXComponent(code), [code]);
   return <MDXComponent />;
 }
