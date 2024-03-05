@@ -14,4 +14,18 @@ export type ClassificationType = {
   content: ArticleType[];
 };
 
-export type tagsType = string[];
+export type TagsType = string[];
+
+export interface TocDataTextType {
+  type: "text";
+  value?: string;
+}
+
+export interface TocDataType {
+  type: "element";
+  tagName: string;
+  properties?: {
+    [prop: string]: string | undefined;
+  };
+  children?: Array<TocDataType | TocDataTextType>;
+}
