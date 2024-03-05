@@ -4,12 +4,12 @@ import MDXComponent from "@/components/MDXComponent";
 import TOC from "@/components/TOC";
 
 export default async function Blog({ params }: { params: { slug: string } }) {
-  const { code, frontmatter, tocData } = await getFileBySlug("blog", params.slug);
+  const { code, frontmatter, tocItemsArr } = await getFileBySlug("blog", params.slug);
   return (
     <main>
-      <time>{frontmatter.publishedOn}</time>
+      <time>{frontmatter?.publishedOn}</time>
       <hr />
-      <TOC tocData={tocData} />
+      <TOC tocItemsArr={tocItemsArr} />
       <hr />
       <article>
         <MDXComponent code={code} />

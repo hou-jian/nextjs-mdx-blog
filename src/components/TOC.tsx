@@ -1,25 +1,23 @@
-import React, { DOMElement, createElement } from "react";
-import { TocDataTextType, TocDataType } from "@/types/definitions";
+import React from "react";
+import { TOCItemType } from "@/types/definitions";
 
-function buildTocItems(
-  itemArr: Array<TocDataType | TocDataTextType> | undefined,
-): (string | DOMElement<{ [prop: string]: string | undefined }, Element> | undefined)[] {
-  if (!itemArr || itemArr.length < 1) return [];
-  return itemArr.map((item) => {
-    if (item.type === "text") {
-      return item.value;
-    }
-    if (item.type === "element") {
-      return createElement(item.tagName, item.properties, ...buildTocItems(item.children));
-    }
-  });
+function buildTocJSX(tocItemsArr: TOCItemType[]) {
+  return (
+    <nav className="flex flex-col">
+      {tocItemsArr.map((item) => (
+        <a href={item.href} key={item.href} className={item.titleLevel === "h3" ? " pl-2" : ""}>
+          {item.value}
+        </a>
+      ))}
+    </nav>
+  );
 }
 
-export default function TOC({ tocData }: { tocData: TocDataType }) {
+export default function TOC({ tocItemsArr }: { tocItemsArr: TOCItemType[] }) {
   return (
     <aside>
       <h2>目录</h2>
-      <nav>{buildTocItems(tocData?.children)}</nav>
+      {buildTocJSX(tocItemsArr)}
     </aside>
   );
 }

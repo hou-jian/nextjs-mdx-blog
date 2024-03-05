@@ -4,9 +4,9 @@ import { bundleMDX } from "mdx-bundler";
 import remarkGfm from "remark-gfm";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
-import rehypeTOC, { HtmlElementNode } from "@jsdevtools/rehype-toc";
+import rehypeTOC from "@jsdevtools/rehype-toc";
 
-import { ArticleType, ContentsType, TocDataType } from "@/types/definitions";
+import { ArticleType, ContentsType, TOCItemType } from "@/types/definitions";
 
 const contentsDirectory = path.join(process.cwd(), "src/contents/");
 const componentsDirectory = path.join(process.cwd(), "src/contents/components-mdx/");
@@ -17,7 +17,7 @@ const componentsDirectory = path.join(process.cwd(), "src/contents/components-md
  * @param slug 文章的唯一标识符 在 mdx 文件元数据中的指定。
  */
 export async function getFileBySlug(type: ContentsType, slug: string) {
-  let tocData: unknown;
+  const tocItemsArr: unknown[] = [];
 
   const filePath = path.join(contentsDirectory, type, `${slug}.mdx`);
   const source = fs.readFileSync(filePath, "utf8").trim();
@@ -42,13 +42,16 @@ export async function getFileBySlug(type: ContentsType, slug: string) {
           rehypeTOC,
           {
             headings: ["h2", "h3"],
-            customizeTOC: function (toc: HtmlElementNode) {
-              try {
-                tocData = cleanTocData(toc);
-              } catch (error) {
-                console.error("tocData 异常，是否更新了 rehypeTOC 插件？", error);
-              }
-              return false; //阻止直接添加到页面，我们自己处理。
+            // heading 是 HtmlElementNode 类型，其 children 属性类型标注有误，这里用 any 临时解决
+            customizeTOCItem: function (toc: unknown, heading: any) {
+              tocItemsArr.push({
+                titleLevel: heading.tagName,
+                href: heading.children[0].properties.href,
+                value: heading.children[1].value,
+              });
+            },
+            customizeTOC: function (toc: unknown) {
+              return false; //阻止 toc 直接渲染到文章，我们自行处理
             },
           },
         ],
@@ -56,41 +59,9 @@ export async function getFileBySlug(type: ContentsType, slug: string) {
       return options;
     },
   });
-
   return {
     code,
     frontmatter: frontmatter as ArticleType | undefined,
-    tocData: tocData as TocDataType | undefined,
-  };
-}
-
-// 当前版本的 HtmlElementNode 类型声明中 children 部分有问题，也许是插件版本的原因。这里用any代替一下
-function buildTocItems(children: any): TocDataType[] {
-  if (!children) return [];
-  return children.map((item: any) => {
-    if (item.type === "text") {
-      return {
-        type: item.type,
-        tagName: "text",
-        value: item.value,
-      };
-    }
-    if (item.type === "element") {
-      return {
-        type: item.type,
-        tagName: item.tagName,
-        properties: item.properties,
-        children: buildTocItems(item.children),
-      };
-    }
-  });
-}
-
-function cleanTocData(toc: HtmlElementNode): TocDataType {
-  return {
-    type: toc.type,
-    tagName: toc.tagName,
-    properties: toc.properties,
-    children: buildTocItems(toc.children),
+    tocItemsArr: tocItemsArr as TOCItemType[],
   };
 }

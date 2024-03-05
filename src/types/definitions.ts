@@ -16,16 +16,8 @@ export type ClassificationType = {
 
 export type TagsType = string[];
 
-export interface TocDataTextType {
-  type: "text";
-  value?: string;
-}
-
-export interface TocDataType {
-  type: "element";
-  tagName: string;
-  properties?: {
-    [prop: string]: string | undefined;
-  };
-  children?: Array<TocDataType | TocDataTextType>;
-}
+export type TOCItemType = {
+  titleLevel: "h2" | "h3";
+  href: string;
+  value: string;
+};
